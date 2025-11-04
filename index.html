@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JaveFu 中文网 - 最终修复版</title>
+    
+    <base href="/JaveFu/"> 
+    
+    <style>
+        /* --- 基本重置和全局样式 --- */
+        html {
+            /* 确保 HTML 元素可以根据内容扩展，解决滚动问题 */
+            min-height: 100%; 
+        }
+        body, h1, h2, ul, p {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', 'Microsoft YaHei', sans-serif;
+            line-height: 1.8;
+            background-color: #f8f8f8;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+        
+        /* --- 顶部导航栏 --- */
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .top-left-logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #d81b60;
+        }
+
+        .main-nav {
+            display: flex; 
+            align-items: center;
+        }
+
+        .main-nav ul {
+            display: flex;
+            margin-right: 25px;
+        }
+
+        .main-nav li {
+            margin: 0 15px;
+            cursor: pointer; 
+        }
+
+        .main-nav a, .top-right-home a {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            transition: color 0.3s; 
+        }
+
+        .main-nav a:hover, .top-right-home a:hover {
+            color: #d81b60;
+        }
+        
+        .top-right-home a {
+            font-weight: bold; 
+        }
+        
+        /* 页面切换的默认样式：隐藏非当前页面 */
+        .page-content {
+            display: none;
+        }
+        
+        /* 强制显示当前页面 */
+        .page-content.active {
+            display: block;
+            /* 确保最小高度，但允许内容扩展和滚动，修复滚动问题 */
+            min-height: calc(100vh - 80px); 
+        }
+
+        /* --- 横幅样式 --- */
+        .banner {
+            background-size: cover; 
+            background-position: center; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white; 
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        .banner-text h1 {
+            font-size: 42px;
+        }
+
+        /* 页面专用的横幅高度和图片 (base href 会自动处理路径) */
+        #home-page .banner { height: 450px; background-image: url('横幅1.jpg'); }
+        #intro-page .banner { height: 300px; background-image: url('横幅2.jpg'); }
+        #albums-page .banner { height: 300px; background-image: url('横幅3.jpg'); }
+        #mv-page .banner { height: 350px; background-image: url('横幅4.jpg'); }
+        #store-page .banner { height: 350px; background-image: url('横幅5.jpg'); }
+        
+        /* 无横幅页面的内容间距 */
+        #management-page main { padding-top: 50px; } 
+
+
+        /* --- 核心内容区域的通用布局 --- */
+        .content-section {
+            padding: 50px 80px;
+            display: flex;
+            gap: 40px; 
+            align-items: flex-start;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+            min-height: 500px;
+        }
+
+        /* 图片/视频容器通用样式 */
+        .artist-photo, .album-cover, .company-photo, .concert-poster {
+            flex-shrink: 0;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .artist-photo img, .album-cover img, .company-photo img, .concert-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        /* 图片尺寸定义 */
+        #intro-page .artist-photo { width: 350px; border-radius: 8px; }
+        #albums-page .album-cover { width: 380px; height: 380px; }
+        #management-page .company-photo { width: 400px; height: 300px; border-radius: 4px; }
+        #store-page .concert-poster { width: 400px; height: auto; }
+
+
+        /* 文字内容区域通用样式 */
+        .artist-bio, .album-details, .company-details, .concert-info {
+            flex-grow: 1;
+            color: #333;
+            font-size: 16px;
+            line-height: 2;
+        }
+        
+        .artist-bio h2, .album-details h2, .company-details h2, .concert-info h2 {
+            font-size: 28px;
+            color: #d81b60;
+            border-bottom: 3px solid #f8bbd0;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        
+        .artist-bio p, .album-details p, .company-details p, .concert-info p {
+            margin-bottom: 20px;
+            text-indent: 2em;
+            text-align: justify;
+        }
+        
+        /* 特殊强调样式 */
+        .album-details strong, .company-details strong {
+            color: #d81b60;
+            font-weight: 600;
+        }
+        .concert-info strong {
+             color: #d81b60;
+            font-weight: 700;
+        }
+
+
+        /* MV页面视频容器样式 */
+        #mv-page .video-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 50px;
+            min-height: 500px;
+        }
+
+        #mv-page .video-wrapper {
+            width: 80%;
+            max-width: 960px;
+            aspect-ratio: 16 / 9;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            background-color: black;
+        }
+
+        #mv-page video {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        #mv-page h2 {
+            font-size: 28px;
+            color: #d81b60;
+            margin-bottom: 10px;
+        }
+
+        /* --- 黑色页脚区域 --- */
+        footer {
+            background-color: #000000; 
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .footer-nav ul {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .footer-nav li {
+            margin: 0 15px;
+            cursor: pointer; 
+        }
+
+        .footer-nav a {
+            color: #f0f0f0; 
+            font-size: 14px;
+        }
+
+        .footer-nav a:hover {
+            color: #d81b60; 
+        }
+
+        .contact-info {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #aaa; 
+        }
+
+        .copyright {
+            font-size: 12px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <div class="top-left-logo">JaveFu</div>
+        
+        <nav class="main-nav">
+            <ul>
+                <li data-target="intro-page"><a href="#">艺人介绍</a></li>
+                <li data-target="albums-page"><a href="#">艺人专辑</a></li>
+                <li data-target="management-page"><a href="#">艺人经纪</a></li>
+                <li data-target="mv-page"><a href="#">最新MV</a></li>
+                <li data-target="store-page"><a href="#">购买通道</a></li>
+            </ul>
+            <div class="top-right-home" data-target="home-page">
+                <a href="#">首页</a>
+            </div>
+        </nav>
+    </header>
+
+    <section id="home-page" class="page-content active">
+        <div class="banner">
+            <div class="banner-text">
+                <h1>欢迎关注JaveFu中文网</h1>
+            </div>
+        </div>
+    </section>
+
+    <section id="intro-page" class="page-content">
+        <div class="banner">
+            <div class="banner-text">
+                <h1>艺人介绍</h1>
+            </div>
+        </div>
+        
+        <main class="content-section">
+            <div class="artist-photo">
+                <img src="图片1.jpg" alt="Jave Fu 付佳伟 艺人照片">
+            </div>
+            <div class="artist-bio">
+                <p>付家伟（Jave Fu）作为华语流行乐新生代歌手中的亮眼存在，自 2024 年正式出道起，便凭借独树一帜的音乐风格迅速在乐坛占据一席之地。他的出现，为略显同质化的华语流行市场注入了新鲜活力，成为不少年轻听众心中 “有态度的新声” 代表。</p>
+                <h2>出道即高光：首张专辑《催什么催》的破圈之路</h2>
+                <p>Jave 的首张专辑《催什么催》并非传统意义上的 “流量向作品”，而是以极具共鸣感的内容和差异化风格，实现了口碑与热度的双丰收。</p>
+                <p>专辑主题精准戳中当代年轻人的生活状态，歌名《催什么催》直白呼应了年轻人面对外界催促（催学业、催工作、催成长）的真实心境，既带点俏皮的反抗，又藏着对自我节奏的坚持，上线后迅速引发全网共鸣，相关话题多次登上社交平台热搜。音乐制作上，他没有盲目追随当下流行的电子或甜系曲风，而是在编曲中融入大量生活化采样，比如街头的嘈杂声、便利店的收银提示音等，让歌曲更具画面感和烟火气；歌词则摒弃华丽辞藻，用 “凌晨的外卖还没凉，方案改到第三版” 这类直白句子，唱出年轻人的奋斗与疲惫，真诚感直击人心。</p>
+                <h2>个人风格：嗓音与舞台的双重感染力</h2>
+                <p>Jave 能快速圈粉，核心在于他 “人歌合一” 的表现力，无论是录音室作品还是现场舞台，都能传递出强烈的个人特质。</p>
+                <p>嗓音特质：他的嗓音不属于传统意义上的 “完美音色”，反而带着一丝恰到好处的沙哑质感，唱起抒情段落时温柔治愈，仿佛在耳边诉说故事；演绎快节奏歌曲时，又能切换出充满力量的声线，将年轻人的热血与冲劲展现得淋漓尽致。舞台风格：不同于部分歌手依赖特效的舞台呈现，Jave 更注重 “情感传递” 与 “互动感”。在舞台上，他的动作设计简洁有力，没有过多复杂舞步，却能通过眼神、肢体幅度的变化，与歌曲情绪深度契合；同时，他擅长与台下粉丝互动，会在演唱间隙分享歌曲背后的故事，让每一场演出都像一场 “与粉丝的音乐对话”。</p>
+                <h2>音乐内核：融合多元元素，唱出年轻态度</h2>
+                <p>Jave 的音乐之所以能打动年轻群体，关键在于其作品始终围绕 “年轻人的生活与态度” 展开，且在风格融合上展现出较高的包容性。</p>
+                <p>风格融合方面，他打破了流行、独立与街头音乐的界限：在歌曲《催什么催》中，用流行旋律搭配独立音乐的叙事感，副歌部分加入街头嘻哈的节奏，让歌曲既有传唱度，又不失个性；在《街角便利店》中，则以民谣式的吉他伴奏为基底，融入街头文化中的 “即兴感”，营造出轻松自在的氛围。内容表达上，他的歌曲从不局限于情爱主题，更多聚焦年轻人的自我成长、对生活的热爱与坚持：《依旧星爸爸》唱出在平凡生活中保持热爱的勇气，《我c你老母》则鼓励年轻人打破外界标签，做真实的自己，这些正向且贴近生活的内容，让他的音乐成为年轻人的 “情绪出口” 与 “精神陪伴”。</p>
+            </div>
+        </main>
+    </section>
+
+    <section id="albums-page" class="page-content">
+        <div class="banner">
+            <div class="banner-text">
+                <h1>艺人专辑</h1>
+            </div>
+        </div>
+        
+        <main class="content-section">
+            <div class="album-cover">
+                <img src="图片2.jpg" alt="专辑封面：催什么催 OPUS">
+            </div>
+
+            <div class="album-details">
+                <h2>《催什么催 OPUS》</h2>
+                <p>这张由付家伟（Jave Fu）打造的专辑《催什么催 OPUS》，堪称 <strong>“市井情绪的音乐”</strong>，把生活里的吐槽、自恋、人际互动统统酿成了带劲的旋律。</p>
+                <p>它的风格是 <strong>“反抒情、反套路” 的市井摇滚风</strong>：《催你个蛋》把被催婚 / 催工的烦躁写成燃炸节奏，堪称 “当代打工人反催战歌”；《我 c 你老母》系列则是把生活里的爆粗口式吐槽，变成了魔性循环的宣泄曲；《哥有八块腹肌》《哥的胸肌》更是用自嘲式的 “身材炫耀”，把男生的小自恋玩成了洗脑神曲，听完满脑子都是 “哥的肌肉就是这么绝” 的循环。
+<p>最妙的是《天骐帮写词》这类作品，把创作伙伴的互动写成歌，像把朋友圈的调侃直接搬进了旋律里，特别有 “音乐版 vlog” 的真实感。整体听感是 <strong>“耳膜被梗击中和节奏带飞”</strong>，没有矫揉造作的抒情，只有把生活里的鸡零狗碎、自恋臭屁、人际吐槽，用直白到 “犯规” 的歌词和抓耳的节奏炸开，属于那种 “一听就知道创作者是个把生活过成段子的狠人” 的专辑，听完能把所有不开心都在笑声和鼓点里碾成渣～。</p>
+            </div>
+        </main>
+    </section>
+
+    <section id="management-page" class="page-content">
+        <main class="content-section">
+            <div class="company-photo">
+                <img src="图片3.jpg" alt="红山娱乐公司照片">
+            </div>
+            
+            <div class="company-details">
+                <h2>红山娱乐公司简介</h2>
+                <p>对独立音乐人来说，最遗憾的从不是 “写不出好歌”，而是 “好歌没人听见”—— 红山娱乐，正是为打破这份遗憾而生的独立音乐出版与服务伙伴。我们深耕独立音乐领域多年，始终以 <strong>“不改变创作本真、只放大音乐价值”</strong> 为核心，陪每一位坚持自我的独立音乐人，走好从 “创作” 到 “被看见” 的每一步。</p>
+                <p>在服务上，我们拒绝 “一刀切” 的标准化流程，只做 <strong>“懂你创作” 的定制化支持</strong>。前期，会为你对接擅长独立曲风的制作人，从 Demo 打磨、编曲优化到录音混音，全程尊重你的创作意图，哪怕是一段即兴的吉他 solo、一句情绪化的念白，都能帮你完整保留；中期，提供专业的版权登记与管理服务，不仅为作品确权，还会实时监控版权使用情况，让你安心创作，无需担心权益受损；后期，打通网易云音乐、QQ 音乐、Spotify 等国内外 20 + 主流音乐平台发行渠道，同时联动独立音乐类 KOL、校园电台、Livehouse 社群做精准推广，比如帮民谣音乐人对接 “城市漫游” 小型巡演，为电子音乐人争取独立音乐节的表演机会，让你的作品不止躺在歌单里，更能走进真实的听众场景。</p>
+                <p>我们深知独立音乐人的不易：可能是深夜改歌词时的孤独，可能是自己投平台却石沉大海的失落，也可能是担心 “小众风格没人喜欢” 的犹豫。所以在红山娱乐，没有 “流量至上” 的要求，也没有 “必须迎合市场” 的压力 —— 你可以坚持民谣里的诗意叙事，也可以探索摇滚里的实验表达，甚至能尝试国风与电子融合的小众曲风，我们会帮你找到同频的听众，让 “小众” 不再是 “冷门” 的代名词，而是 <strong>“独特” 的勋章</strong>。</p>
+                <p>这些年，我们陪很多独立音乐人走过迷茫期：帮弹唱歌手把卧室里的 demo，变成了某音乐平台 “年度独立单曲”；陪乐队从校园排练室出发，站上了全国独立音乐节的舞台；让原本只在小圈子传播的方言说唱，被更多人听见并喜欢。未来，红山娱乐依然会做独立音乐的 “摆渡人”，不追求批量打造 “网红艺人”，只希望帮每一位有态度的独立音乐人，把 <strong>“写给少数人的歌”</strong>，变成 <strong>“能打动更多人的声音”</strong>；把 <strong>“一个人的坚持”</strong>，变成 <strong>“一群人的共鸣”</strong>。</p>
+                <p>如果你是正在寻找伙伴的独立音乐人，不必担心风格小众，不必害怕没人懂你的创作 —— 红山娱乐，会陪你把独立音乐的路，走得更稳、更远。</p>
+            </div>
+        </main>
+    </section>
+
+
+    <section id="mv-page" class="page-content">
+        <div class="banner">
+            <div class="banner-text">
+                <h1>最新MV</h1>
+            </div>
+        </div>
+        
+        <main class="video-container">
+            <h2>《催什么催》官方MV</h2>
+            <div class="video-wrapper">
+                <video controls poster="横幅4.jpg">
+                    <source src="视频1.mp4" type="video/mp4">
+                    您的浏览器不支持 HTML5 video 标签。
+                </video>
+            </div>
+            <p style="font-size: 14px; color: #999; text-align: center;">如果视频无法播放，请检查文件命名和格式是否正确。</p>
+        </main>
+    </section>
+
+    <section id="store-page" class="page-content">
+        <div class="banner">
+            <div class="banner-text">
+                <h1>购买通道</h1>
+            </div>
+        </div>
+        
+        <main class="content-section">
+            <div class="concert-info">
+                <h2>“不高兴与没头脑”2025“food”世界巡回演唱会-南京站</h2>
+                <p>2024年，即将出道2年的“不高兴与没头脑”在南京掷下一颗重磅古诗词，**「food」**正式起跑。2025年，环绕全球跑了720天，**「food」**巡演经过了2个年头，“不高兴与没头脑”又带着这套精彩的演唱会回到金陵，为**「food」**画下完美句点。2025年10月1日至10日3日，“不高兴与没头脑”**「food」**世界巡回演唱会-南京收官站，连续三晚南京体育场开唱，“富”游全球的1场盛大嘉年华，终于迎来璀璨终章。</p>
+
+                <p>回望这轮巡演的起心动念之时，曾有这样的文字报导:“为纪念、庆祝这意义深刻的2周年，“不高兴与没头脑”推出了自己的第2套世界巡回演唱会。为了给歌迷们献上这份充满意义的作品，“不高兴与没头脑”反复与制作团队开会，展现了超乎常人的毅力、超越自我的创意。总是引领风潮，令人惊呼连连的不高兴与没头脑，决定与歌迷一同迎接自己在乐坛的第2载岁月，而演唱会上又将会有什么出人意表的惊喜，全球万千乐迷都屏息以待。”</p>
+
+                <p>为纪念“不高兴与没头脑”出道的第2年，food横空出世。这出梦幻般的盛会起航去到世界各地，所到之地都将掀起一场“富”式热潮。如今**「food」**彷彿已成为欢乐、幸福的代名词，food感染着无数歌迷，唤起成千上万人的青春记忆。</p>
+
+                <p>为纪念富出道的第2年，food横空出世。这出梦幻般的盛会起航去到世界各地，所到之地都将掀起一场“富”式热潮。如今**「food」**彷彿已成为欢乐、幸福的代名词，food感染着无数歌迷，唤起成千上万人的青春记忆。</p>
+
+                <p>2025年，出道2周年的“不高兴与没头脑”仍然是那个手放在钢琴上就能献上伟大作品的音乐才子，仍然是将话筒递给观众就能引发全场万人大合唱的巨星。2年时光，730个夜晚，无数人的青春被写进这场**「food」**盛大的音乐叙事里，而“不高兴与没头脑”在南京体育场连续三晚音乐能量的爆发，将记录下这段故事的最终章。此次**「food」**巡游世界一圈又回到起点，我们期待“不高兴与没头脑”再次回到南京体育场的舞台将青春旋律谱写，也期待收官之站会在南京这座奇妙的城市碰撞出更加奇妙的火花。</p>
+                
+                <p style="text-align:center; font-size: 18px; margin-top: 30px;">
+                    <a href="https://www.damai.cn/" target="_blank" style="color: white; background-color: #d81b60; padding: 10px 30px; border-radius: 5px; font-weight: bold; display: inline-block;">立即前往官方购票链接 ></a>
+                </p>
+            </div>
+            
+            <div class="concert-poster">
+                <img src="图片4.jpg" alt="演唱会海报">
+            </div>
+        </main>
+    </section>
+    
+
+    <footer>
+        <nav class="footer-nav">
+            <ul>
+                <li data-target="intro-page"><a href="#">艺人介绍</a></li>
+                <li data-target="albums-page"><a href="#">艺人专辑</a></li>
+                <li data-target="management-page"><a href="#">艺人经纪</a></li>
+                <li data-target="mv-page"><a href="#">最新MV</a></li>
+                <li data-target="store-page"><a href="#">购买通道</a></li>
+            </ul>
+        </nav>
+        <div class="contact-info">
+            <p>联系邮箱：1743216195@qq.com</p>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 JaveFu中文网. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        function showPage(targetId) {
+            // 1. 隐藏所有页面内容
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // 2. 显示目标页面
+            const targetPage = document.getElementById(targetId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                // 切换页面时，滚动到顶部，让用户感觉更自然
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // 绑定点击事件到所有导航链接 (顶部导航和页脚导航)
+        document.querySelectorAll('[data-target]').forEach(link => {
+            // 确保点击 li 或 a 都能触发
+            link.addEventListener('click', function(e) {
+                // 阻止默认的链接跳转行为 (href="#")
+                e.preventDefault(); 
+                
+                const targetId = this.getAttribute('data-target');
+                // 确保只有当点击导航元素时，才处理 hash 逻辑
+                if (this.tagName === 'LI' || this.parentNode.tagName === 'LI' || this.classList.contains('top-right-home')) {
+                    const pageName = targetId.replace('-page', '');
+                    // 使用 <base href> 标签，所以这里的路径只需要写 #pageName
+                    history.pushState(null, '', `#${pageName}`);
+                }
+                showPage(targetId);
+            });
+        });
+
+        // URL hash 处理，用于刷新页面时定位和浏览器的前进/后退按钮
+        function handleHashChange() {
+             const hash = window.location.hash.replace('#', '');
+             // 将 store/intro/albums 等 hash 转换为对应的 ID (store-page)
+             const targetId = (hash && hash !== 'home') ? hash + '-page' : 'home-page';
+             showPage(targetId);
+        }
+        
+        window.addEventListener('popstate', handleHashChange);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 页面加载完成后，根据 URL hash 决定显示哪个页面
+            handleHashChange();
+        });
+    </script>
+
+</body>
+</html>
